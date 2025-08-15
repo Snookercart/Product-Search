@@ -1,34 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Product Search</title>
-    <style>
-        #searchBox {
-            padding: 11px;
-            width: 100%;
-            font-size: 16px;
-            color: maroon;
-            font-weight: bold;
-            max-width: 300px;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            border-color: #D9913E;
-        }
-        #suggestions {
-            list-style: none;
-            padding: 0;
-            margin-top: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Product Search</title>
+<style>
+  #searchBox {
+    padding: 11px;
+    width: 100%;
+    font-size: 16px;
+    color: maroon;
+    font-weight: bold;
+    max-width: 300px;
+    border: 2px solid #D9913E;
+    border-radius: 10px;
+  }
+  #suggestions li:hover {
+    background-color: #f8e4d0;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
 
-    <input type="text" id="searchBox" placeholder="Quick Product Search..." onkeyup="searchProducts()">
-    <ul id="suggestions"></ul>
+<!-- Search Input -->
+<input type="text" id="searchBox" placeholder="Search Products...">
+<ul id="suggestions" style="list-style:none; padding:0; margin-top:10px;"></ul>
 
-    <!-- Link your JS file from GitHub -->
-    <script src="search.js"></script>
+<!-- Load products from GitHub -->
+<script src="https://snookercart.github.io/Product-Search/search.js"></script>
 
-</body>
-</html>
+<script>
+  let currentIndex = -1;
+  let filtered = [];
+
+  function highlightMatch(name, query) {
+    const regex = new RegExp(`(${query})`, 'gi');
+    return name.replace(regex, '<strong style="color: maroon;">$1</strong>');
+  }
+
+  function renderSuggestions() {
+    const suggestionBox = document.getElementById('suggestions');
+    suggestionBox.innerHTML = '';
+    filtered.forEach((p, index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="${p.url}" target="_blank" style="color: chocolate; text-decoration: none; display: block; padding: 8px;">${highlightMatch(p.name, document.getElementById('searchBox').value)}</a>`;
+      li.addEventListener('mouseover', () => {
+        currentIndex = index;
+        updateHighlight();
+      });
+      suggestionBox.appendChild(li);
+    });
+    updateHighlight();
+  }
+
+  function updateHighlight() {
+    const suggestionBox = document.getElementById('suggestions');
+    Array.from(suggestionBox.children).forEach((li, idx) => {
+      li.style.backgroundColor = idx === currentIndex ? '#f8e4d0' : '';
+    });
+  }
+
+  function searchProducts(e) {
+    const input = document.getElementById('searchBox').value.trim().toLowerCase();
+
+    if (e.key === 'ArrowDown') {
+      if (filtered.length > 0) {
+        currentIndex = (currentIndex + 1) % filtered.length;
