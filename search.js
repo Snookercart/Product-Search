@@ -1,6 +1,5 @@
 // Product list with proper URLs only
 const products = [
-    [
     {
         "name": "ADR Tip 10mm MJW",
         "url": "https://snookercart.com/buy-product/ols/products/adr-tip-10mm-mjw-76a148"
